@@ -1,1 +1,25 @@
 
+Question 1: Exploring The Course Management System (CMS)
+
+Q1. How many entity classes are there in the schema (org.example.schema.CMS.*)?
+    There are 5 entity classes in the schema. These are the course class, the professor class,
+    the student class, the teaches class, and the transcript class.
+
+Q2. What purpose does the cms-ddl.sql file serve? Where is it used?
+    The cms-ddl.sql file defines the database schema for the course management system where 
+    the data from the course, professor, student, teaches, and transcript csv files will be 
+    stored. The system reads this file and uses it to set up constraints, such as data types, 
+    primary keys, and foreign key constraints before any data is actually loaded into the
+    tables.
+
+Q3. What are the foreign keys of the transcript table?
+    The foreign keys of the transcript table are studentId, which is referenced from the
+    student table, and courseId, which is referenced from the course table.
+
+Q4. How many parameters does the FindStudent query have?
+    The FindStudent query only has one parameter, which is :studentId.
+
+Q5. What format is the database stored in?
+    The database is an in memory DuckDB database, and its data is stored in CSV files 
+    that get loaded in when the program runs.
+
