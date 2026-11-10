@@ -9,18 +9,42 @@
 --(lowest, highest) pair of grades for those courses. Be sure to list all student–department
 --combinations that qualify.
 
--- students full name, department code, (lowest, highest) pair of courses, (lowest, highest) grades
--- department, ece, civ, mie, edm
-
--- select full name, code
-
-CREATE TABLE courseDepartment AS
-SELECT courseId, courseName, LEFT(courseId, 3) AS department
-FROM course;
-
 COPY (
-    SELECT student.firstName || ' ' || student.lastName AS fullName,
-    coursedepartment.department, 
+    --highest grade for each course for each student
+    WITH highestGradeEachCourse AS (
+        SELECT
+            transcript.studentId,
+            LEFT(transcript.courseId, 3) AS deptCode, --department code
+            (course.gradCourse % 2) || '_' || transcript.courseId AS courseId, --udnergrad and 500 courses are 0_, grad courses are 1_
+            MAX(transcript.grade) AS grade
+        FROM transcript
+        JOIN course ON transcript.courseId = course.courseId
+        GROUP BY transcript.studentId, transcript.courseId, course.gradCourse
+    ),
 
+    --lowest and highest courses for each student for each department
+    LowHighPerDeptPerStudent AS (
+        SELECT
+            studentId,
+            deptCode,
+            MIN(courseId) AS lowestCourse,
+            MAX(courseId) AS highestCourse
+        FROM highestGradeEachCourse
+        GROUP BY studentId, deptCode
+        HAVING COUNT(DISTINCT SUBSTR(courseId, 6, 3)) >= 2 --only count a dept for a student if theyve taken >=2 classes in that dept
+    )
 
+    --fullName, department code, (low,high) courses for the student, (low,high) grades for those courses
+    SELECT s.firstName || ' ' || s.lastName AS fullName,
+        lh.deptCode,
+        '(' || SUBSTR(lh.lowestCourse, 3) || ', ' || SUBSTR(lh.highestCourse, 3) || ')' AS pairOfLowHighCourses,
+        '(' || lowCourseGrade.grade || ', ' || highCourseGrade.grade || ')' AS pairOfLowHighGrades
+    FROM LowHighPerDeptPerStudent lh
+    JOIN student s ON lh.studentId = s.studentId
+    JOIN highestGradeEachCourse lowCourseGrade
+      ON lh.studentId = lowCourseGrade.studentId
+      AND lh.lowestCourse = lowCourseGrade.courseId
+    JOIN highestGradeEachCourse highCourseGrade
+      ON lh.studentId = highCourseGrade.studentId
+      AND lh.highestCourse = highCourseGrade.courseId
 ) TO 'src/main/resources/data/output/query8.csv' (HEADER, DELIMITER ',');

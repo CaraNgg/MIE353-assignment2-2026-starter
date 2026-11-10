@@ -41,6 +41,7 @@ CREATE TABLE transcript (
     FOREIGN KEY (courseId) REFERENCES course(courseId)
 );
 
+-- Schema for gradCourses.csv
 CREATE TABLE IF NOT EXISTS gradCourses (
     courseId   VARCHAR(20) PRIMARY KEY,
     courseName VARCHAR(255) NOT NULL

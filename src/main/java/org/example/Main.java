@@ -38,7 +38,7 @@ public class Main {
         CMS.commit();
         
         // EXTRA MAIN FUNCTION CALLS CAN GO BELOW:
-        loadQueries(); //for part 4 of assignment
+        runQueries(); //for part 4 of assignment
         
       }
       catch (Exception e) {
@@ -57,13 +57,15 @@ public class Main {
     loadGradData();
   }
 
-public static void loadQueries() throws SQLException {
+public static void runQueries() throws SQLException {
   query1();
   query2();
   query3();
   query4();
   query5();
   query6();
+  query7();
+  query8();
 }
 
   public static void loadStudentData() throws SQLException {
@@ -142,6 +144,18 @@ public static void loadQueries() throws SQLException {
   public static void query6() throws SQLException {
     CMS.addSqlChange(ctx -> {
       Query6.execute(ctx);
+    });
+    CMS.commit();
+  }
+  public static void query7() throws SQLException {
+    CMS.addSqlChange(ctx -> {
+      Query7.execute(ctx);
+    });
+    CMS.commit();
+  }
+  public static void query8() throws SQLException {
+    CMS.addSqlChange(ctx -> {
+      Query8.execute(ctx);
     });
     CMS.commit();
   }
